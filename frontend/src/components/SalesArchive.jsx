@@ -37,7 +37,6 @@ export default function SalesArchive() {
     }
   };
 
-  // Filter logic for search and date ranges
   useEffect(() => {
     let result = invoices;
 
@@ -46,7 +45,8 @@ export default function SalesArchive() {
       result = result.filter(
         (inv) =>
           inv.invoiceNumber.toLowerCase().includes(query) ||
-          inv.customerName.toLowerCase().includes(query),
+          inv.customerName.toLowerCase().includes(query) ||
+          (inv.issuedBy && inv.issuedBy.toLowerCase().includes(query)),
       );
     }
 
@@ -65,18 +65,18 @@ export default function SalesArchive() {
     setFilteredInvoices(result);
   }, [searchQuery, startDate, endDate, invoices]);
 
-  // Export Filtered Sales History to Excel/CSV with Subtotal and Discount
-  // Export Filtered Sales History to Excel/CSV with Overall Net Total Summary Row
+  // Export Filtered Sales History with Salesperson Column & Summary Row
   const handleExportCSV = () => {
     if (filteredInvoices.length === 0) {
       alert("No sales data available to export.");
       return;
     }
 
-    // 1. Column Headers
+    // 1. Column Headers (Added 'Issued By / Salesperson')
     const headers = [
       "Invoice No",
       "Customer Name",
+      "Issued By / Salesperson",
       "Date & Time",
       "Items Count",
       "Subtotal (Rs.)",
@@ -90,6 +90,7 @@ export default function SalesArchive() {
       return [
         inv.invoiceNumber,
         `"${inv.customerName.replace(/"/g, '""')}"`,
+        `"${(inv.issuedBy || "Admin").replace(/"/g, '""')}"`,
         `"${new Date(inv.createdAt).toLocaleString("en-GB")}"`,
         inv.items?.length || 0,
         subtotalVal,
@@ -98,7 +99,7 @@ export default function SalesArchive() {
       ];
     });
 
-    // 3. Calculate Overall Totals for the Summary Row
+    // 3. Grand Total Calculations
     const overallSubtotal = filteredInvoices.reduce(
       (sum, inv) =>
         sum + (inv.subtotal || inv.totalAmount + (inv.discount || 0)),
@@ -113,9 +114,10 @@ export default function SalesArchive() {
       0,
     );
 
-    // 4. Create Grand Total Summary Row
+    // 4. Create Grand Total Summary Row (Aligned to updated columns)
     const summaryRow = [
       '"OVERALL GRAND TOTAL"',
+      '""',
       '""',
       '""',
       filteredInvoices.reduce((sum, inv) => sum + (inv.items?.length || 0), 0),
@@ -124,15 +126,15 @@ export default function SalesArchive() {
       overallNetTotal,
     ];
 
-    // 5. Combine Headers, Rows, an empty line, and the Summary Row
+    // 5. Combine Array Structure
     const csvArray = [
       headers.join(","),
       ...rows.map((r) => r.join(",")),
-      '""', // Blank line separator before totals
+      '""', // Empty row separator
       summaryRow.join(","),
     ];
 
-    // 6. Trigger CSV Download
+    // 6. Trigger File Download
     const csvContent = "data:text/csv;charset=utf-8," + csvArray.join("\n");
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
@@ -155,7 +157,6 @@ export default function SalesArchive() {
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-6xl mx-auto">
-        {/* Top Header Bar */}
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-800">
@@ -173,7 +174,6 @@ export default function SalesArchive() {
           </button>
         </div>
 
-        {/* Metrics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div className="bg-white p-5 rounded-lg shadow-sm border flex items-center justify-between">
             <div>
@@ -183,9 +183,6 @@ export default function SalesArchive() {
               <h3 className="text-2xl font-bold text-gray-900">
                 Rs. {totalRevenue.toLocaleString()}
               </h3>
-            </div>
-            <div className="p-3 bg-green-100 text-green-600 rounded-full">
-              <DollarSign size={24} />
             </div>
           </div>
 
@@ -204,13 +201,12 @@ export default function SalesArchive() {
           </div>
         </div>
 
-        {/* Filter Bar */}
         <div className="bg-white p-4 rounded-lg shadow-sm border mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="relative">
             <Search className="w-5 h-5 text-gray-400 absolute left-3 top-2.5" />
             <input
               type="text"
-              placeholder="Search by customer or invoice #"
+              placeholder="Search by customer, salesperson, or invoice #"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -238,7 +234,6 @@ export default function SalesArchive() {
           </div>
         </div>
 
-        {/* Sales Table */}
         <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
           {loading ? (
             <div className="p-8 text-center text-gray-500">
@@ -252,6 +247,7 @@ export default function SalesArchive() {
                 <tr className="bg-gray-50 border-b text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   <th className="p-4">Invoice #</th>
                   <th className="p-4">Customer</th>
+                  <th className="p-4">Issued By</th>
                   <th className="p-4">Date & Time</th>
                   <th className="p-4 text-center">Items Sold</th>
                   <th className="p-4 text-right">Total Amount</th>
@@ -261,7 +257,7 @@ export default function SalesArchive() {
               <tbody className="divide-y divide-gray-200 text-sm">
                 {filteredInvoices.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="p-6 text-center text-gray-500">
+                    <td colSpan="7" className="p-6 text-center text-gray-500">
                       No invoices found matching your search parameters.
                     </td>
                   </tr>
@@ -273,6 +269,9 @@ export default function SalesArchive() {
                       </td>
                       <td className="p-4 text-gray-800 font-medium">
                         {inv.customerName}
+                      </td>
+                      <td className="p-4 text-gray-700 font-medium">
+                        {inv.issuedBy || "Store Staff"}
                       </td>
                       <td className="p-4 text-gray-500">
                         {new Date(inv.createdAt).toLocaleString("en-GB")}
@@ -300,7 +299,6 @@ export default function SalesArchive() {
         </div>
       </div>
 
-      {/* Cash Memo Modal with Subtotal & Discount Breakdown */}
       {selectedInvoice && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-6 relative max-h-[90vh] overflow-y-auto">
@@ -311,9 +309,7 @@ export default function SalesArchive() {
               <X size={20} />
             </button>
 
-            {/* Printable Memo Content */}
             <div id="printable-modal" className="font-sans text-gray-800">
-              {/* Shop Header */}
               <div className="text-center border-b-2 border-slate-900 pb-3 mb-4">
                 <h2 className="text-xl font-black text-slate-900 uppercase">
                   BISMILLAH PAINT & HARDWARE STORE
@@ -327,12 +323,17 @@ export default function SalesArchive() {
                 </div>
               </div>
 
-              {/* Invoice Metadata */}
               <div className="grid grid-cols-2 gap-4 text-xs mb-4 border-b pb-3">
                 <div>
                   <p>
                     <span className="font-bold text-gray-700">Customer:</span>{" "}
                     {selectedInvoice.customerName}
+                  </p>
+                  <p>
+                    <span className="font-bold text-gray-700">
+                      Salesperson:
+                    </span>{" "}
+                    {selectedInvoice.issuedBy || "Store Staff"}
                   </p>
                 </div>
                 <div className="text-right">
@@ -351,7 +352,6 @@ export default function SalesArchive() {
                 </div>
               </div>
 
-              {/* Items Table */}
               <table className="w-full text-left border-collapse mb-4 text-xs">
                 <thead>
                   <tr className="border-y border-slate-900 bg-gray-50 font-bold text-slate-900">
@@ -381,7 +381,6 @@ export default function SalesArchive() {
                 </tbody>
               </table>
 
-              {/* Summary Calculation Section */}
               <div className="flex justify-end mb-6 border-t-2 border-slate-900 pt-2">
                 <div className="w-64 space-y-1 text-xs">
                   <div className="flex justify-between text-gray-700">
@@ -414,7 +413,6 @@ export default function SalesArchive() {
                 </div>
               </div>
 
-              {/* Terms & Signature */}
               <div className="border-t pt-3 text-[10px] text-gray-600 flex justify-between items-end">
                 <div>
                   <p className="font-bold uppercase text-gray-700">Terms:</p>
@@ -426,7 +424,6 @@ export default function SalesArchive() {
               </div>
             </div>
 
-            {/* Modal Controls */}
             <div className="mt-6 flex justify-end gap-3 no-print">
               <button
                 onClick={() => window.print()}

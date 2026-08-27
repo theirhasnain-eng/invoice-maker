@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const invoiceSchema = new mongoose.Schema({
   invoiceNumber: { type: String, required: true, unique: true },
   customerName: { type: String, default: 'Walk-in Customer' },
+  issuedBy: { type: String, default: 'Store Staff' },
   items: [
     {
       itemId: { type: mongoose.Schema.Types.ObjectId, ref: 'Item' },
