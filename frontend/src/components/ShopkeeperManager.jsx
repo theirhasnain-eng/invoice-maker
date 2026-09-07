@@ -46,7 +46,7 @@ export default function ShopkeeperManager() {
   };
 
   return (
-    <div className="p-6 max-w-5xl mx-auto space-y-8">
+    <div className="p-3 sm:p-6 max-w-5xl mx-auto space-y-6 sm:space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-gray-800">Manage Shopkeepers</h1>
         <p className="text-sm text-gray-500">Add new staff members and control billing portal access</p>
@@ -104,8 +104,8 @@ export default function ShopkeeperManager() {
       </form>
 
       {/* Shopkeeper Accounts Table */}
-      <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
-        <table className="w-full text-left border-collapse text-sm">
+      <div className="bg-white rounded-lg shadow-sm border overflow-x-auto">
+        <table className="w-full min-w-[560px] text-left border-collapse text-sm">
           <thead>
             <tr className="bg-gray-50 border-b text-xs font-semibold text-gray-600 uppercase">
               <th className="p-4">Name</th>

@@ -114,18 +114,18 @@ export default function Inventory() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100 p-3 sm:p-6">
       <div className="max-w-6xl mx-auto">
         
         {/* Header Bar */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Inventory & Stock Management</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Inventory & Stock Management</h1>
             <p className="text-sm text-gray-500">Add, edit, track, and reorder shop products</p>
           </div>
           <button
             onClick={handleOpenCreateModal}
-            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium shadow"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium shadow"
           >
             <Plus size={18} /> Add New Product
           </button>
@@ -175,7 +175,8 @@ export default function Inventory() {
           {loading ? (
             <div className="p-8 text-center text-gray-500">Loading stock inventory...</div>
           ) : (
-            <table className="w-full text-left border-collapse">
+            <div className="overflow-x-auto">
+            <table className="w-full min-w-[640px] text-left border-collapse">
               <thead>
                 <tr className="bg-gray-50 border-b text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   <th className="p-4">Product Name</th>
@@ -202,7 +203,7 @@ export default function Inventory() {
                       <tr key={item._id} className="hover:bg-gray-50">
                         <td className="p-4 font-semibold text-gray-900">{item.name}</td>
                         <td className="p-4 text-gray-600">
-                          <span className="bg-gray-100 text-gray-700 px-2.5 py-1 rounded-full text-xs font-medium">
+                          <span className="inline-block whitespace-nowrap bg-gray-100 text-gray-700 px-2.5 py-1 rounded-full text-xs font-medium">
                             {item.category}
                           </span>
                         </td>
@@ -210,15 +211,15 @@ export default function Inventory() {
                         <td className="p-4 text-center font-bold text-gray-800">{item.quantity}</td>
                         <td className="p-4 text-center">
                           {isOutOfStock ? (
-                            <span className="bg-red-100 text-red-800 text-xs px-2.5 py-1 rounded-full font-bold">
+                            <span className="inline-block whitespace-nowrap bg-red-100 text-red-800 text-xs px-2.5 py-1 rounded-full font-bold">
                               Out of Stock
                             </span>
                           ) : isLowStock ? (
-                            <span className="bg-amber-100 text-amber-800 text-xs px-2.5 py-1 rounded-full font-bold">
+                            <span className="inline-block whitespace-nowrap bg-amber-100 text-amber-800 text-xs px-2.5 py-1 rounded-full font-bold">
                               Low Stock ({item.quantity} left)
                             </span>
                           ) : (
-                            <span className="bg-green-100 text-green-800 text-xs px-2.5 py-1 rounded-full font-bold">
+                            <span className="inline-block whitespace-nowrap bg-green-100 text-green-800 text-xs px-2.5 py-1 rounded-full font-bold">
                               In Stock
                             </span>
                           )}
@@ -245,6 +246,7 @@ export default function Inventory() {
                 )}
               </tbody>
             </table>
+            </div>
           )}
         </div>
       </div>
@@ -252,7 +254,7 @@ export default function Inventory() {
       {/* Add / Edit Item Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 relative">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-4 sm:p-6 relative max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setIsModalOpen(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
@@ -289,7 +291,7 @@ export default function Inventory() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Price ($)</label>
                   <input

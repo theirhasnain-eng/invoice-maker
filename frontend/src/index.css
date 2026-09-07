@@ -1,9 +1,18 @@
 @import "tailwindcss";
 
 /* Base Body Styles */
+html {
+  overflow-x: hidden;
+}
+
+.font-display {
+  font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+}
+
 body {
   background-color: #f3f4f6; /* Equivalent to bg-gray-100 */
   color: #111827; /* Equivalent to text-gray-900 */
+  overflow-x: hidden;
   font-family:
     system-ui,
     -apple-system,

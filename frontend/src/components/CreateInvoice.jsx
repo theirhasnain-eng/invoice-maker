@@ -153,18 +153,18 @@ export default function CreateInvoice() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100 p-3 sm:p-6">
       {/* Top Controls Bar */}
-      <div className="max-w-4xl mx-auto mb-4 flex justify-between items-center no-print">
+      <div className="max-w-4xl mx-auto mb-4 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between no-print">
         <div>
-          <h1 className="text-xl font-bold text-gray-800">
+          <h1 className="text-lg sm:text-xl font-bold text-gray-800">
             Paint Shop Cash Memo
           </h1>
           <p className="text-xs text-gray-500">
             Pakistani Retail Invoice & Receipt Standard Format
           </p>
         </div>
-        <div className="space-x-3">
+        <div className="sm:space-x-3">
           {/* <button
             onClick={() => handleSaveInvoice(false)}
             disabled={loading}
@@ -175,7 +175,7 @@ export default function CreateInvoice() {
           <button
             onClick={() => handleSaveInvoice(true)}
             disabled={loading}
-            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium text-sm shadow disabled:opacity-50"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-medium text-sm shadow disabled:opacity-50"
           >
             <Printer size={16} /> Save & Print Cash Memo
           </button>
@@ -185,7 +185,7 @@ export default function CreateInvoice() {
       {/* Notifications */}
       {error && (
         <div className="max-w-4xl mx-auto mb-4 bg-red-50 border-l-4 border-red-500 text-red-700 p-3 rounded flex items-center gap-2 text-sm no-print">
-          <AlertCircle size={18} /> {error}
+          <AlertCircle size={18} className="flex-shrink-0" /> {error}
         </div>
       )}
       {success && (
@@ -197,7 +197,7 @@ export default function CreateInvoice() {
       {/* Printable Receipt Paper Container */}
       <div
         id="printable-area"
-        className="max-w-4xl mx-auto bg-white p-8 shadow-md border border-gray-300 font-sans text-gray-800"
+        className="max-w-4xl mx-auto bg-white p-4 sm:p-8 shadow-md border border-gray-300 font-sans text-gray-800"
       >
         {/* Header - Shop Branding */}
         <div className="text-center border-b-2 border-slate-900 pb-4 mb-4">
@@ -216,7 +216,7 @@ export default function CreateInvoice() {
         </div>
 
         {/* Receipt Header Grid */}
-        <div className="grid grid-cols-2 gap-4 text-xs mb-4 border-b pb-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs mb-4 border-b pb-3">
           {/* Customer Details */}
           <div className="space-y-1">
             <div className="flex items-center gap-2">
@@ -285,7 +285,8 @@ export default function CreateInvoice() {
         </div>
 
         {/* Itemized Table */}
-        <table className="w-full text-left border-collapse mb-4">
+        <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+        <table className="w-full min-w-[560px] sm:min-w-0 text-left border-collapse mb-4">
           <thead>
             <tr className="border-y-2 border-slate-900 bg-gray-50 text-xs font-bold text-slate-900">
               <th className="py-2 px-2 text-center w-12">Sr.</th>
@@ -366,6 +367,7 @@ export default function CreateInvoice() {
             )}
           </tbody>
         </table>
+        </div>
 
         {/* Add Product Button */}
         <button
@@ -377,7 +379,7 @@ export default function CreateInvoice() {
 
         {/* Totals Summary */}
         <div className="flex justify-end mb-8">
-          <div className="w-64 space-y-2 text-xs border-t pt-2">
+          <div className="w-full sm:w-64 space-y-2 text-xs border-t pt-2">
             <div className="flex justify-between text-gray-700">
               <span>Sub Total:</span>
               <span className="font-semibold">
@@ -406,7 +408,7 @@ export default function CreateInvoice() {
         </div>
 
         {/* Footer & Terms */}
-        <div className="border-t pt-4 text-[11px] text-gray-600 grid grid-cols-2 gap-4">
+        <div className="border-t pt-4 text-[11px] text-gray-600 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <p className="font-bold text-gray-800 uppercase mb-1">
               Terms & Conditions:

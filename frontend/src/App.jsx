@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import { Menu } from "lucide-react";
 import Login from "./components/Login";
 import Sidebar from "./components/Sidebar";
 import CreateInvoice from "./components/CreateInvoice";
@@ -10,6 +11,7 @@ import Inventory from "./components/Inventory"; // 1. Ensure Inventory is import
 const ProtectedLayout = () => {
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   if (!token) {
     return <Navigate to="/login" replace />;
@@ -17,8 +19,17 @@ const ProtectedLayout = () => {
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      <Sidebar />
-      <div className="flex-1 overflow-y-auto">
+      {/* Mobile menu button */}
+      <button
+        onClick={() => setSidebarOpen(true)}
+        className="lg:hidden fixed top-3 left-3 z-20 p-2 bg-slate-900 text-white rounded-md shadow-md no-print"
+        aria-label="Open menu"
+      >
+        <Menu size={20} />
+      </button>
+
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <div className="flex-1 overflow-y-auto min-w-0 pt-14 lg:pt-0">
         <Routes>
           {/* Shared Route */}
           <Route path="/create-receipt" element={<CreateInvoice />} />
